@@ -48,7 +48,7 @@ CREATE TABLE Produit(
    id_produit VARCHAR(16),
    nom VARCHAR(50),
    description TEXT,
-   prix DECIMAL(15,2),
+   prix_unitaire DECIMAL(15,2),
    quantite_stock INT,
    PRIMARY KEY(id_produit)
 );
