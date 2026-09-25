@@ -1,6 +1,6 @@
 <?php
 
-$action = isset($_GET['a']) ? strtolower($_GET['a']) : 'home';
+$action = isset($_GET['a']) ? strtolower($_GET['a']) : 'accueil';
 
 $fiche_ctrl = 'src/controllers/c.' . $action . '.php';
 $fiche_view = 'src/views/v.' . $action . '.php';
@@ -17,7 +17,7 @@ require $fiche_ctrl;
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Boutique de café</title>
     <link href="public/css/index.css" rel="stylesheet" />
 </head>
 
