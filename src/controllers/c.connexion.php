@@ -1,4 +1,5 @@
 <?php
+require '../../conf/pdo.php';
 require '../models/Utilisateur.php';
 require '../models/Client.php';
 
@@ -9,11 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail = trim($_POST['adrMail']);
         $mdp = trim($_POST['mdp']);
 
+        $c = new Utilisateur($pdo);
         $c = new Client($pdo);
 
-        $c->SetAdr_mail($mail);
+        $c->SetadrMail($mail);
         $c->SetMdp($mdp);
-        $c->
+
+
+        if ($c->RechercheClient($mail) && password_verify($mdpSaisi, $c->GetMdp())) {}
 
 
     } else {
