@@ -5,22 +5,22 @@ class Client extends Utilisateur
 {
     use Generateur;
     private $pdo;
-    private $adr_mail;
+    private $adrMail;
     private $prenom;
     private $nom;
 
-    function __construct(PDO $pdo, $adr_mail, $prenom, $nom, $idUtilisateur, $mdp, $est_valide, $token, $token_valide, $date_creation)
+    function __construct(PDO $pdo, $adrMail = null, $prenom = null, $nom = null, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null)
     {
-        parent::__construct($idUtilisateur, $mdp, $est_valide, $token, $token_valide, $date_creation);
+        parent::__construct($idUtilisateur, $mdp, $estValide, $token, $tokenExpire, $dateCreation);
         $this->pdo = $pdo;
-        $this->adr_mail = $adr_mail;
+        $this->adrMail = $adrMail;
         $this->prenom = $prenom;
         $this->nom = $nom;
     }
 
-    public function GetAdr_mail()
+    public function GetadrMail()
     {
-        return $this->adr_mail;
+        return $this->adrMail;
     }
     public function GetPrenom()
     {
@@ -31,9 +31,9 @@ class Client extends Utilisateur
         return $this->nom;
     }
 
-    public function SetAdr_mail($adr_mail)
+    public function SetadrMail($adrMail)
     {
-        $this->adr_mail = $adr_mail;
+        $this->adrMail = $adrMail;
     }
     public function SetPrenom($prenom)
     {
@@ -44,62 +44,65 @@ class Client extends Utilisateur
         $this->nom = $nom;
     }
 
-    // CREATE
-    // public function CreationClient(){
-    //     $req = "";
-    //     $stmt = $this->pdo->prepare($req);
-    //     $stmt->bindParam
-
-    // }
-
-
-
-
-
-
-    public function Creatazee()
+    public function CreationClient()
     {
         try {
-            $req = "INSERT INTO Client(adr_mail, prenom, nom) VALUES (:adr_mail, :prenom, :nom)";
-            $stmt = $this->pdo->prepare($req);
-            $stmt->bindValue(':adr_mail', $this->id());
-            $stmt->bindParam(':prenom', $this->prenom);
-            $stmt->bindParam(':nom', $this->nom);
-            $stmt->execute();
-            return true;
-        } catch (PDOException $e) {
-            echo "Erreur lors de la création des données : " . $e->GetMessage();
-            return false;
-        }
-    }
+            $this->pdo->beginTransaction();
 
-    public function Read($adr_mail)
-    {
-        try {
-            $req = "SELECT adr_mail, prenom, nom FROM Client WHERE adr_mail = :adr_mail";
-            $stmt = $this->pdo->prepare($req);
-            $stmt->bindParam(':adr_mail', $adr_mail);
-            $stmt->execute();
-            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if ($res) {
-                $this->adr_mail = $res['adr_mail'];
-                $this->prenom = $res['prenom'];
-                $this->nom = $res['nom'];
-                return true;
+            if (!parent::CreationUtilisateur()) {
+                $this->pdo->rollBack();
+                return false;
             }
-            return false;
-        } catch (PDOException $e) {
-            echo "Erreur lors de la récupération des données : " . $e->GetMessage();
+
+            $req = "INSERT INTO Client (id_utilisateur, adr_mail, prenom, nom) VALUES (:id_utilisateur, :adr_mail, :prenom, :nom)";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindParam('id_utilisateur', $this->idUtilisateur);
+            $stmt->bindParam('adr_mail', $this->adrMail);
+            $stmt->bindParam('prenom', $this->prenom);
+            $stmt->bindParam('nom', $this->nom);
+            $stmt->execute();
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (PDOException) {
+            $this->pdo->rollBack();
             return false;
         }
     }
 
-    public function Update($adr_mail)
+
+    // Récupère un utilisateur client à partir de son adresse mail via la page de connexion
+    public function RechercheClient($mail)
     {
         try {
-            $req = "UPDATE Client Set prenom = :prenom, nom = :nom WHERE adr_mail = :adr_mail";
+            $req = "SELECT id_utilisateur, adr_mail, prenom, nom FROM Client
+                WHERE adr_mail = :adrMail";
+
             $stmt = $this->pdo->prepare($req);
-            $stmt->bindParam(':adr_mail', $adr_mail);
+            $stmt->bindValue(':adrMail', $mail);
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->adrMail = $row['adr_mail'];
+            $this->prenom = $row['prenom'];
+            $this->nom = $row['nom'];
+
+            return parent::RechercheUtilisateur($row['id_utilisateur']);
+        } catch (PDOException) {
+            return false;
+        }
+    }
+
+
+
+
+    public function Update($adrMail)
+    {
+        try {
+            $req = "UPDATE Client Set prenom = :prenom, nom = :nom WHERE adrMail = :adrMail";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindParam(':adrMail', $adrMail);
             $stmt->bindParam(':prenom', $this->prenom);
             $stmt->bindParam(':nom', $this->nom);
             $stmt->execute();
@@ -108,12 +111,12 @@ class Client extends Utilisateur
         }
     }
 
-    public function Delete($adr_mail)
+    public function Delete($adrMail)
     {
         try {
-            $req = "DELETE FROM Client WHERE adr_mail = :adr_mail";
+            $req = "DELETE FROM Client WHERE adrMail = :adrMail";
             $stmt = $this->pdo->prepare($req);
-            $stmt->bindParam(':adr_mail', $adr_mail);
+            $stmt->bindParam(':adrMail', $adrMail);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Erreur lors de la suppression des données : " . $e->GetMessage();
