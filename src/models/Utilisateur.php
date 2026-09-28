@@ -1,7 +1,7 @@
 <?php
 
-require_once '../traits/Chiffrement.php';
-require_once '../traits/Generateur.php';
+require_once __DIR__ . '/../traits/Chiffrement.php';
+require_once __DIR__ . '/../traits/Generateur.php';
 
 class Utilisateur
 {

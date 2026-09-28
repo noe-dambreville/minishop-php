@@ -1,5 +1,5 @@
 <?php
-require '../../conf/env.php';
+require_once __DIR__ . '/../../conf/env.php';
 
 trait Chiffrement
 {
