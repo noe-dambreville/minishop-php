@@ -13,6 +13,6 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ];
 
-    $pdo_auth = new PDO("mysql:host=$hst; dbname=$bdd; charset=utf8", $uti, $mdp, $opt);
+    $pdo = new PDO("mysql:host=$hst; dbname=$bdd; charset=utf8", $uti, $mdp, $opt);
 
 } catch (Exception) {}
