@@ -1,8 +1,10 @@
+-- Data Definition Language
+
 CREATE TABLE Utilisateur(
    id_utilisateur VARCHAR(16),
-   mdp VARCHAR(50),
+   mdp VARCHAR(255),
    est_valide TINYINT(1),
-   token VARCHAR(32),
+   token VARCHAR(64),
    token_expire DATETIME,
    date_creation DATETIME,
    PRIMARY KEY(id_utilisateur)
@@ -53,6 +55,16 @@ CREATE TABLE Produit(
    PRIMARY KEY(id_produit)
 );
 
+CREATE TABLE Panier(
+   id_panier VARCHAR(16),
+   date_creation DATETIME,
+   date_maj DATETIME,
+   id_utilisateur VARCHAR(16) NOT NULL,
+   PRIMARY KEY(id_panier),
+   UNIQUE(id_utilisateur),
+   FOREIGN KEY(id_utilisateur) REFERENCES Client(id_utilisateur)
+);
+
 CREATE TABLE Contenir(
    id_commande VARCHAR(16),
    id_produit VARCHAR(16),
@@ -81,3 +93,13 @@ CREATE TABLE Valider(
    FOREIGN KEY(id_commande) REFERENCES Commande(id_commande),
    FOREIGN KEY(id_utilisateur) REFERENCES Administrateur(id_utilisateur)
 );
+
+CREATE TABLE Composer(
+   id_produit VARCHAR(16),
+   id_panier VARCHAR(16),
+   quantite INT,
+   PRIMARY KEY(id_produit, id_panier),
+   FOREIGN KEY(id_produit) REFERENCES Produit(id_produit),
+   FOREIGN KEY(id_panier) REFERENCES Panier(id_panier)
+);
+  
