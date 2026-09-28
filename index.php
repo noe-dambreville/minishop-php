@@ -1,4 +1,5 @@
 <?php
+require 'conf/ini.php';
 
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'accueil';
 
