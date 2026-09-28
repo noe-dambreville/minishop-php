@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../models/Utilisateur.php';
 
 class Client extends Utilisateur
 {
