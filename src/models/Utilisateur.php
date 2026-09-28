@@ -1,7 +1,13 @@
 <?php
+
+require_once '../traits/Chiffrement.php';
+require_once '../traits/Generateur.php';
+
 class Utilisateur
 {
-    private $pdo;
+    use Chiffrement;
+    use Generateur;
+    protected $pdo ;
     protected $idUtilisateur;
     protected $mdp;
     protected $estValide;
@@ -9,7 +15,7 @@ class Utilisateur
     protected $tokenExpire;
     protected $dateCreation;
 
-    function __construct(PDO $pdo, $idUtilisateur, $mdp, $estValide, $token, $tokenExpire, $dateCreation = null)
+    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null)
     {
         $this->pdo = $pdo;
         $this->idUtilisateur = $idUtilisateur;
@@ -20,6 +26,7 @@ class Utilisateur
         $this->dateCreation = $dateCreation;
     }
 
+    // GETTERS
     public function GetIdUtilisateur()
     {
         return $this->idUtilisateur;
@@ -28,7 +35,7 @@ class Utilisateur
     {
         return $this->mdp;
     }
-    public function GetestValide()
+    public function GetEstValide()
     {
         return $this->estValide;
     }
@@ -36,15 +43,16 @@ class Utilisateur
     {
         return $this->token;
     }
-    public function GettokenExpire()
+    public function GetTokenExpire()
     {
         return $this->tokenExpire;
     }
-    public function GetdateCreation()
+    public function GetDateCreation()
     {
         return $this->dateCreation;
     }
 
+    // SETTERS
     public function SetIdUtilisateur($idUtilisateur)
     {
         $this->idUtilisateur = $idUtilisateur;
@@ -53,7 +61,7 @@ class Utilisateur
     {
         $this->mdp = $mdp;
     }
-    public function SetestValide($estValide)
+    public function SetEstValide($estValide)
     {
         $this->estValide = $estValide;
     }
@@ -61,11 +69,11 @@ class Utilisateur
     {
         $this->token = $token;
     }
-    public function SettokenExpire($tokenExpire)
+    public function SetTokenExpire($tokenExpire)
     {
         $this->tokenExpire = $tokenExpire;
     }
-    public function SetdateCreation($dateCreation)
+    public function SetDateCreation($dateCreation)
     {
         $this->dateCreation = $dateCreation;
     }
@@ -74,19 +82,20 @@ class Utilisateur
     public function CreationUtilisateur()
     {
         try {
-            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, est_valide, token, token_expire, date_creation) 
+            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, est_valide, token, token_expire, date_creation)
                 VALUES (:id_utilisateur, :mdp, :est_valide, :token, :token_expire, :date_creation)";
 
             $stmt = $this->pdo->prepare($req);
-            $stmt->bindParam('id_utilisateur', $this->idUtilisateur);
-            $stmt->bindParam('mdp', $this->mdp);
-            $stmt->bindParam('est_valide', $this->estValide);
-            $stmt->bindParam('token', $this->token);
-            $stmt->bindParam('token_expire', $this->tokenExpire);
-            $stmt->bindParam('date_creation', $this->dateCreation);
+            $stmt->bindParam(':id_utilisateur', $this->idUtilisateur);
+            $stmt->bindParam(':mdp', $this->mdp);
+            $stmt->bindParam(':est_valide', $this->estValide);
+            $stmt->bindParam(':token', $this->token);
+            $stmt->bindParam(':token_expire', $this->tokenExpire);
+            $stmt->bindParam(':date_creation', $this->dateCreation);
 
-            return $stmt->execute();
+            $ok = $stmt->execute();
 
+            return $ok;
         } catch (PDOException) {
             return false;
         }
@@ -104,9 +113,7 @@ class Utilisateur
             $stmt->execute();
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
-                return false;
-            }
+
             $this->idUtilisateur = $idUtilisateur;
             $this->mdp = $row['mdp'];
             $this->estValide = $row['est_valide'];
@@ -120,17 +127,39 @@ class Utilisateur
         }
     }
 
-    
-
-    // DELETE
-    public function SuppUtilisateur()
+    // UPDATE
+    public function MajUtilisateur($idUtilisateur)
     {
         try {
-            $req = "DELETE FROM Utilisateur WHERE id_utilisateur = :idUtilisateur";
+            $req = "UPDATE Utilisateur SET mdp = :mdp, est_valide = :est_valide, token = :token, token_expire = :token_expire, date_creation = :date_creation
+                WHERE id_utilisateur = :id_utilisateur";
 
             $stmt = $this->pdo->prepare($req);
-            $stmt->bindValue(':id', $this->idUtilisateur);
+            $stmt->bindValue(':id_utilisateur', $idUtilisateur);
+            $stmt->bindParam(':mdp', $this->mdp);
+            $stmt->bindParam(':est_valide', $this->estValide);
+            $stmt->bindParam(':token', $this->token);
+            $stmt->bindParam(':token_expire', $this->tokenExpire);
+            $stmt->bindParam(':date_creation', $this->dateCreation);
+
             return $stmt->execute();
+        } catch (PDOException) {
+            return false;
+        }
+    }
+
+    // DELETE
+    public function SuppUtilisateur($idUtilisateur)
+    {
+        try {
+            $req = "DELETE FROM Utilisateur WHERE id_utilisateur = :id_utilisateur";
+
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(':id_utilisateur', $idUtilisateur);
+
+            return $stmt->execute();
+        } catch (PDOException) {
+            return false;
         }
     }
 }
