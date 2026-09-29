@@ -1,5 +1,6 @@
 <?php
-require 'conf/ini.php';
+require 'src/conf/ini.php';
+require_once 'src/conf/pdo.php';
 
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'accueil';
 
@@ -10,6 +11,8 @@ if (!file_exists($fiche_ctrl) || !file_exists($fiche_view)) {
     header('Location: ?a=erreurs&code=404');
     exit;
 }
+
+require 'src/conf/route.php';
 
 require $fiche_ctrl;
 ?>
