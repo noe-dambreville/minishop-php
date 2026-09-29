@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../conf/pdo.php';
-require __DIR__ . '/../models/Utilisateur.php';
+require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../models/Utilisateur.php';
 
 if (isset($_SESSION['id_utilisateur'])) {
     $u = new Utilisateur($pdo);

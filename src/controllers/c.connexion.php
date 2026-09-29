@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../conf/pdo.php';
-require __DIR__ . '/../models/Client.php';
+require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../models/Client.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
