@@ -9,10 +9,15 @@ $routes = [
 $rolesOk = $routes[$action] ?? null;
 
 if ($rolesOk !== null) {
-    $UtiConnecte = new Utilisateur($pdo);
+    $u = new Utilisateur($pdo);
 
-    if (!$UtiConnecte->VerifSession() || !in_array($UtiConnecte->GetRole(), $rolesOk, true)) {
-        header('Location: ?a=connexion');
+    if (!$u->VerifSession() || !in_array($u->GetRole(), $rolesOk, true)) {
+        if (in_array('admin', $rolesOk, true)) {
+            // Masquer l'existance si le client ou public tente de se connecter sur la page admin
+            header('Location: ?a=erreurs&code=404');
+        } else {
+            header('Location: ?a=connexion');
+        }
         exit;
     }
 }
