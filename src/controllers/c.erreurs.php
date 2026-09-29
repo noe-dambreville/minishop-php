@@ -1,9 +1,16 @@
 <?php
-if (isset($_GET['code'])) {
-    switch ($_GET['code']) {
-        case '400': $code = "400 - Demande incorrecte"; break;
-        case '403': $code = "403 - Accès interdit"; break;
-        case '404': $code = "404 - Page non trouvée"; break;
-        case '503': $code = "503 - Service indisponible"; break;
-    }
+$messagesParCode = [
+    400 => 'Demande incorrecte',
+    403 => 'Accès interdit',
+    404 => 'Page non trouvée',
+    503 => 'Service indisponible',
+];
+
+$codeHttp = ($_GET['code'] ?? 404);
+if (!isset($messagesParCode[$codeHttp])) {
+    $codeHttp = 404;
 }
+
+http_response_code($codeHttp);
+
+$messageErreur = $codeHttp . ' - ' . $messagesParCode[$codeHttp];

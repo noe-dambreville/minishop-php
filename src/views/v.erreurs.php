@@ -1,2 +1,2 @@
-<h1><?= htmlspecialchars($code ?? 'Erreur') ?></h1>
+<h1><?= htmlspecialchars($messageErreur) ?></h1>
 <a href=javascript:history.go(-1)>Retour</a>
