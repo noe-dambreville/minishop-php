@@ -82,6 +82,9 @@ class Client extends Utilisateur
             $stmt->execute();
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return false;
+            }
 
             $this->adrMail = $row['adr_mail'];
             $this->prenom = $row['prenom'];

@@ -151,6 +151,9 @@ class Utilisateur
             $stmt->execute();
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return false;
+            }
 
             $this->idUtilisateur = $idUtilisateur;
             $this->mdp = $row['mdp'];
