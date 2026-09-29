@@ -15,4 +15,7 @@ try {
 
     $pdo = new PDO("mysql:host=$hst; dbname=$bdd; charset=utf8", $uti, $mdp, $opt);
 
-} catch (Exception) {}
+} catch (Exception) {
+    header('Location: ?a=erreurs&code=503');
+    exit;
+}
