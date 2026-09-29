@@ -7,15 +7,16 @@ class Utilisateur
 {
     use Chiffrement;
     use Generateur;
-    protected $pdo ;
+    protected $pdo;
     protected $idUtilisateur;
     protected $mdp;
     protected $estValide;
     protected $token;
     protected $tokenExpire;
     protected $dateCreation;
+    protected $role;
 
-    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null)
+    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null, $role = 'client')
     {
         $this->pdo = $pdo;
         $this->idUtilisateur = $idUtilisateur;
@@ -24,6 +25,7 @@ class Utilisateur
         $this->token = $token;
         $this->tokenExpire = $tokenExpire;
         $this->dateCreation = $dateCreation;
+        $this->role = $role;
     }
 
     // GETTERS
@@ -51,6 +53,10 @@ class Utilisateur
     {
         return $this->dateCreation;
     }
+    public function GetRole()
+    {
+        return $this->role;
+    }
 
     // SETTERS
     public function SetIdUtilisateur($idUtilisateur)
@@ -77,13 +83,44 @@ class Utilisateur
     {
         $this->dateCreation = $dateCreation;
     }
+    public function SetRole($role)
+    {
+        $this->role = $role;
+    }
+
+
+    public function VerifSession()
+    {
+        $idConnecte = $_SESSION['id_utilisateur'] ?? null;
+        $tokenConnecte = $_SESSION['token'] ?? null;
+
+        if ($idConnecte === null || $tokenConnecte === null) {
+            return false;
+        }
+
+        if (!$this->RechercheUtilisateur($idConnecte)) {
+            return false;
+        }
+
+        if ($this->GetToken() === null || !hash_equals($this->GetToken(), $tokenConnecte)) {
+            return false;
+        }
+
+        if ($this->GetTokenExpire() === null || new DateTime($this->GetTokenExpire()) < new DateTime()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // CRUD //
 
     // CREATE
     public function CreationUtilisateur()
     {
         try {
-            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, est_valide, token, token_expire, date_creation)
-                VALUES (:id_utilisateur, :mdp, :est_valide, :token, :token_expire, :date_creation)";
+            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, est_valide, token, token_expire, date_creation, role)
+                VALUES (:id_utilisateur, :mdp, :est_valide, :token, :token_expire, :date_creation, :role)";
 
             $stmt = $this->pdo->prepare($req);
             $stmt->bindParam(':id_utilisateur', $this->idUtilisateur);
@@ -92,6 +129,7 @@ class Utilisateur
             $stmt->bindParam(':token', $this->token);
             $stmt->bindParam(':token_expire', $this->tokenExpire);
             $stmt->bindParam(':date_creation', $this->dateCreation);
+            $stmt->bindParam(':role', $this->role);
 
             $ok = $stmt->execute();
 
@@ -105,7 +143,7 @@ class Utilisateur
     public function RechercheUtilisateur($idUtilisateur)
     {
         try {
-            $req = "SELECT mdp, est_valide, token, token_expire, date_creation FROM Utilisateur
+            $req = "SELECT mdp, est_valide, token, token_expire, date_creation, role FROM Utilisateur
                 WHERE id_utilisateur = :id_utilisateur";
 
             $stmt = $this->pdo->prepare($req);
@@ -120,6 +158,7 @@ class Utilisateur
             $this->token = $row['token'];
             $this->tokenExpire = $row['token_expire'];
             $this->dateCreation = $row['date_creation'];
+            $this->role = $row['role'];
 
             return true;
         } catch (PDOException) {
@@ -131,7 +170,7 @@ class Utilisateur
     public function MajUtilisateur($idUtilisateur)
     {
         try {
-            $req = "UPDATE Utilisateur SET mdp = :mdp, est_valide = :est_valide, token = :token, token_expire = :token_expire, date_creation = :date_creation
+            $req = "UPDATE Utilisateur SET mdp = :mdp, est_valide = :est_valide, token = :token, token_expire = :token_expire, date_creation = :date_creation, role = :role
                 WHERE id_utilisateur = :id_utilisateur";
 
             $stmt = $this->pdo->prepare($req);
@@ -141,6 +180,7 @@ class Utilisateur
             $stmt->bindParam(':token', $this->token);
             $stmt->bindParam(':token_expire', $this->tokenExpire);
             $stmt->bindParam(':date_creation', $this->dateCreation);
+            $stmt->bindParam(':role', $this->role);
 
             return $stmt->execute();
         } catch (PDOException) {
