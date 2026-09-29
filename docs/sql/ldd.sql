@@ -7,12 +7,13 @@ CREATE TABLE Utilisateur(
    token VARCHAR(64),
    token_expire DATETIME,
    date_creation DATETIME,
+   role ENUM('client','admin') NOT NULL DEFAULT 'client'
    PRIMARY KEY(id_utilisateur)
 );
 
 CREATE TABLE Client(
    id_utilisateur VARCHAR(16),
-   adr_mail VARCHAR(30),
+   adr_mail VARCHAR(255),
    prenom VARCHAR(30),
    nom VARCHAR(20),
    PRIMARY KEY(id_utilisateur),
