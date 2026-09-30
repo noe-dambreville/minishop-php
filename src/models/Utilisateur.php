@@ -16,7 +16,7 @@ class Utilisateur
     protected $dateCreation;
     protected $role;
 
-    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null, $role = 'client')
+    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null, $role = null)
     {
         $this->pdo = $pdo;
         $this->idUtilisateur = $idUtilisateur;
