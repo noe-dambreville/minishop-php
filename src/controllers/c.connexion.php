@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../conf/pdo.php';
 require_once __DIR__ . '/../models/Client.php';
+require_once __DIR__ . '/../models/Connexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -8,10 +9,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $mail = trim($_POST['adrMail']);
         $mdp_saisi = trim($_POST['mdp']);
+        $adrIp = $_SERVER['REMOTE_ADDR'];
 
         $c = new Client($pdo);
+        
+        $compteTrouve = $c->RechercheClient($mail);
+        $idCible = $compteTrouve ? $c->GetIdUtilisateur() : null;
 
-        if ($c->RechercheClient($mail) && $c->MdpVerif($mdp_saisi)) {
+        $j = new Connexion($pdo, $adrIp, (new DateTime())->format('Y-m-d H:i:s'), 0, $idCible);
+
+        if ($j->TropDeTentatives($adrIp, $idCible)) {
+            $j->Enregistrer();
+
+            $notif_erreur = "Trop de tentatives, réessayez plus tard";
+
+        } elseif ($compteTrouve && $c->MdpVerif($mdp_saisi)) {
+            $j->SetStatut(1);
+            $j->Enregistrer();
+
             // Si ok
             session_regenerate_id(true);
 
@@ -30,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
 
         } else {
+            $j->Enregistrer();
             $notif_erreur = "Identifiant ou mot de passe incorrect";
         }
 
