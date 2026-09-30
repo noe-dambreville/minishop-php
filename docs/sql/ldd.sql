@@ -30,7 +30,7 @@ CREATE TABLE Administrateur(
 
 CREATE TABLE Connexion(
    id_connexion VARCHAR(16),
-   adr_ip VARCHAR(15),
+   adr_ip VARCHAR(45),
    date_heure DATETIME,
    statut TINYINT(1),
    id_utilisateur VARCHAR(16),
