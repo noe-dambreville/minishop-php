@@ -7,9 +7,9 @@ class Client extends Utilisateur
     private $prenom;
     private $nom;
 
-    function __construct(PDO $pdo, $adrMail = null, $prenom = null, $nom = null, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null)
+    function __construct(PDO $pdo, $adrMail = null, $prenom = null, $nom = null, $idUtilisateur = null, $mdp = null, $statut = null, $token = null, $tokenExpire = null, $dateCreation = null)
     {
-        parent::__construct($pdo, $idUtilisateur, $mdp, $estValide, $token, $tokenExpire, $dateCreation);
+        parent::__construct($pdo, $idUtilisateur, $mdp, $statut, $token, $tokenExpire, $dateCreation, 'client');
         $this->adrMail = $adrMail;
         $this->prenom = $prenom;
         $this->nom = $nom;
@@ -27,6 +27,20 @@ class Client extends Utilisateur
     public function GetNom()
     {
         return $this->nom;
+    }
+    public function GetAdrMailMasque()
+    {
+        $adrMail = $this->adrMail;
+        $positionArobase = mb_strpos($adrMail, '@');
+
+        if ($positionArobase === false) {
+            return str_repeat('*', mb_strlen($adrMail));
+        }
+
+        $partieLocale = mb_substr($adrMail, 0, $positionArobase);
+        $domaine = mb_substr($adrMail, $positionArobase);
+
+        return mb_substr($partieLocale, 0, 1) . str_repeat('*', max(mb_strlen($partieLocale) - 1, 1)) . $domaine;
     }
 
     // SETTERS
@@ -79,6 +93,31 @@ class Client extends Utilisateur
 
             $stmt = $this->pdo->prepare($req);
             $stmt->bindValue(':adr_mail', $adrMail);
+            $stmt->execute();
+
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return false;
+            }
+
+            $this->adrMail = $row['adr_mail'];
+            $this->prenom = $row['prenom'];
+            $this->nom = $row['nom'];
+
+            return parent::RechercheUtilisateur($row['id_utilisateur']);
+        } catch (PDOException) {
+            return false;
+        }
+    }
+
+    // Récupère un client à partir de son id (page de confirmation, renvoi de code)
+    public function RechercheClientParId($idUtilisateur)
+    {
+        try {
+            $req = "SELECT id_utilisateur, adr_mail, prenom, nom FROM Client WHERE id_utilisateur = :id_utilisateur";
+
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(':id_utilisateur', $idUtilisateur);
             $stmt->execute();
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);

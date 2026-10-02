@@ -12,4 +12,10 @@ trait Generateur
     {
         return bin2hex(random_bytes(32));
     }
+
+    // Génération d'un code PIN à 6 chiffres
+    public function GenerationPin()
+    {
+        return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
 }
