@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../conf/pdo/pdo_auth.php';
 require_once __DIR__ . '/../models/Utilisateur.php';
 
 if (isset($_SESSION['id_utilisateur'])) {
-    $u = new Utilisateur($pdo);
+    $u = new Utilisateur($pdo_auth);
 
     if ($u->RechercheUtilisateur($_SESSION['id_utilisateur'])) {
         $u->SetToken(null);

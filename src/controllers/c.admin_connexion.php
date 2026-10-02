@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../conf/pdo/pdo_auth.php';
 require_once __DIR__ . '/../models/Administrateur.php';
 require_once __DIR__ . '/../models/Connexion.php';
 
@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mdp_saisi = trim($_POST['mdp']);
         $adrIp = $_SERVER['REMOTE_ADDR'];
 
-        $a = new Administrateur($pdo);
+        $a = new Administrateur($pdo_auth);
         
         $compteTrouve = $a->RechercheAdmin($identifiant);
         $idCible = $compteTrouve ? $a->GetIdUtilisateur() : null;
 
-        $j = new Connexion($pdo, $adrIp, (new DateTime())->format('Y-m-d H:i:s'), 0, $idCible);
+        $j = new Connexion($pdo_auth, $adrIp, (new DateTime())->format('Y-m-d H:i:s'), 0, $idCible);
 
         if ($j->TropDeTentatives($adrIp, $idCible)) {
             $j->Enregistrer();

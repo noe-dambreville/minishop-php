@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../conf/pdo/pdo_auth.php';
 require_once __DIR__ . '/../conf/mail.php';
 require_once __DIR__ . '/../models/Utilisateur.php';
 require_once __DIR__ . '/../models/Client.php';
@@ -12,7 +12,7 @@ if ($idAttente === null) {
     exit;
 }
 
-$ca = new Client($pdo);
+$ca = new Client($pdo_auth);
 
 if (!$ca->RechercheClientParId($idAttente)) {
     unset($_SESSION['id_utilisateur_en_attente']);
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renvoyer'])) {
 
     $codePin = $ca->GenerationPin();
 
-    $p = new Pin($pdo, $codePin, (new DateTime('+15 minutes'))->format('Y-m-d H:i:s'), 0, $idAttente);
+    $p = new Pin($pdo_auth, $codePin, (new DateTime('+15 minutes'))->format('Y-m-d H:i:s'), 0, $idAttente);
     $p->Enregistrer();
 
     envoyerCodePin($ca->GetAdrMail(), $codePin);
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renvoyer'])) {
 
     $codeSaisi = trim($_POST['code_pin']);
 
-    $p = new Pin($pdo);
+    $p = new Pin($pdo_auth);
 
     if (!$p->RechercheParUtilisateur($idAttente)) {
         $notif_erreur = "Aucun code en attente, veuillez en demander un nouveau";
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['renvoyer'])) {
 
     } elseif ($p->EstCorrect($codeSaisi)) {
 
-        $u = new Utilisateur($pdo);
+        $u = new Utilisateur($pdo_auth);
         
         $u->RechercheUtilisateur($idAttente);
         $u->SetStatut('valide');

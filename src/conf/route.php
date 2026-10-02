@@ -9,7 +9,7 @@ $routes = [
 $rolesOk = $routes[$action] ?? null;
 
 if ($rolesOk !== null) {
-    $u = new Utilisateur($pdo);
+    $u = new Utilisateur($pdo_auth);
 
     if (!$u->VerifSession() || !in_array($u->GetRole(), $rolesOk, true)) {
         if (in_array('admin', $rolesOk, true)) {

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../conf/pdo.php';
+require_once __DIR__ . '/../conf/pdo/pdo_auth.php';
 require_once __DIR__ . '/../conf/mail.php';
 require_once __DIR__ . '/../models/Client.php';
 require_once __DIR__ . '/../models/Pin.php';
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail = trim($_POST['adrMail']);
         $mdp_saisi = trim($_POST['mdp']);
 
-        $c = new Client($pdo);
+        $c = new Client($pdo_auth);
 
         if (!$c->RechercheClient($mail)) {
 
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($c->CreationClient()) {
                 $codePin = $c->GenerationPin();
 
-                $pin = new Pin($pdo, $codePin, (new DateTime('+15 minutes'))->format('Y-m-d H:i:s'), 0, $c->GetIdUtilisateur());
+                $pin = new Pin($pdo_auth, $codePin, (new DateTime('+15 minutes'))->format('Y-m-d H:i:s'), 0, $c->GetIdUtilisateur());
                 $pin->Enregistrer();
 
                 envoyerCodePin($mail, $codePin);

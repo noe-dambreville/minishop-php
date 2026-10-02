@@ -1,6 +1,6 @@
 <?php
 require 'src/conf/ini.php';
-require_once 'src/conf/pdo.php';
+require_once 'src/conf/pdo/pdo_auth.php';
 
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'accueil';
 
