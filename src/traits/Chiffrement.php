@@ -27,7 +27,13 @@ trait Chiffrement
 
     public function MdpVerif($mdp)
     {
+        return $this->Verifier($mdp, $this->mdp);
+    }
+
+    // Vérifie une valeur saisie contre un hash stocké (mdp, code PIN, etc.)
+    public function Verifier($valeurSaisie, $hashStocke)
+    {
         $poivre = $_ENV['APP_CLEF'] ?? '';
-        return password_verify($mdp . $poivre, $this->mdp);
+        return $hashStocke !== null && password_verify($valeurSaisie . $poivre, $hashStocke);
     }
 }

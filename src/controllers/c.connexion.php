@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $adrIp = $_SERVER['REMOTE_ADDR'];
 
         $c = new Client($pdo);
-        
+
         $compteTrouve = $c->RechercheClient($mail);
         $idCible = $compteTrouve ? $c->GetIdUtilisateur() : null;
 
@@ -27,13 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $j->SetStatut(1);
             $j->Enregistrer();
 
+            if ($c->GetStatut() !== 'valide') {
+                $_SESSION['id_utilisateur_en_attente'] = $c->GetIdUtilisateur();
+
+                header('Location: ?a=confirmation');
+                exit;
+            }
+
             // Si ok
             session_regenerate_id(true);
 
             $token = $c->GenerationToken();
             $tokenExpire = (new DateTime('+30 minutes'))->format('Y-m-d H:i:s');
 
-            $c->SetToken($token);
+            $c->SetToken($c->Hasher($token));
             $c->SetTokenExpire($tokenExpire);
 
             $c->MajClient($c->GetIdUtilisateur());

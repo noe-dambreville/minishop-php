@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $a->GenerationToken();
             $tokenExpire = (new DateTime('+30 minutes'))->format('Y-m-d H:i:s');
 
-            $a->SetToken($token);
+            $a->SetToken($a->Hasher($token));
             $a->SetTokenExpire($tokenExpire);
 
             $a->MajAdmin($a->GetIdUtilisateur());

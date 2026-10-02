@@ -10,18 +10,18 @@ class Utilisateur
     protected $pdo;
     protected $idUtilisateur;
     protected $mdp;
-    protected $estValide;
+    protected $statut;
     protected $token;
     protected $tokenExpire;
     protected $dateCreation;
     protected $role;
 
-    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null, $role = null)
+    function __construct(PDO $pdo, $idUtilisateur = null, $mdp = null, $statut = null, $token = null, $tokenExpire = null, $dateCreation = null, $role = null)
     {
         $this->pdo = $pdo;
         $this->idUtilisateur = $idUtilisateur;
         $this->mdp = $mdp;
-        $this->estValide = $estValide;
+        $this->statut = $statut;
         $this->token = $token;
         $this->tokenExpire = $tokenExpire;
         $this->dateCreation = $dateCreation;
@@ -37,9 +37,9 @@ class Utilisateur
     {
         return $this->mdp;
     }
-    public function GetEstValide()
+    public function GetStatut()
     {
-        return $this->estValide;
+        return $this->statut;
     }
     public function GetToken()
     {
@@ -67,9 +67,9 @@ class Utilisateur
     {
         $this->mdp = $mdp;
     }
-    public function SetEstValide($estValide)
+    public function SetStatut($statut)
     {
-        $this->estValide = $estValide;
+        $this->statut = $statut;
     }
     public function SetToken($token)
     {
@@ -102,7 +102,7 @@ class Utilisateur
             return false;
         }
 
-        if ($this->GetToken() === null || !hash_equals($this->GetToken(), $tokenConnecte)) {
+        if (!$this->Verifier($tokenConnecte, $this->GetToken())) {
             return false;
         }
 
@@ -119,13 +119,13 @@ class Utilisateur
     public function CreationUtilisateur()
     {
         try {
-            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, est_valide, token, token_expire, date_creation, role)
-                VALUES (:id_utilisateur, :mdp, :est_valide, :token, :token_expire, :date_creation, :role)";
+            $req = "INSERT INTO Utilisateur (id_utilisateur, mdp, statut, token, token_expire, date_creation, role)
+                VALUES (:id_utilisateur, :mdp, :statut, :token, :token_expire, :date_creation, :role)";
 
             $stmt = $this->pdo->prepare($req);
             $stmt->bindParam(':id_utilisateur', $this->idUtilisateur);
             $stmt->bindParam(':mdp', $this->mdp);
-            $stmt->bindParam(':est_valide', $this->estValide);
+            $stmt->bindParam(':statut', $this->statut);
             $stmt->bindParam(':token', $this->token);
             $stmt->bindParam(':token_expire', $this->tokenExpire);
             $stmt->bindParam(':date_creation', $this->dateCreation);
@@ -143,7 +143,7 @@ class Utilisateur
     public function RechercheUtilisateur($idUtilisateur)
     {
         try {
-            $req = "SELECT mdp, est_valide, token, token_expire, date_creation, role FROM Utilisateur
+            $req = "SELECT mdp, statut, token, token_expire, date_creation, role FROM Utilisateur
                 WHERE id_utilisateur = :id_utilisateur";
 
             $stmt = $this->pdo->prepare($req);
@@ -157,7 +157,7 @@ class Utilisateur
 
             $this->idUtilisateur = $idUtilisateur;
             $this->mdp = $row['mdp'];
-            $this->estValide = $row['est_valide'];
+            $this->statut = $row['statut'];
             $this->token = $row['token'];
             $this->tokenExpire = $row['token_expire'];
             $this->dateCreation = $row['date_creation'];
@@ -173,13 +173,13 @@ class Utilisateur
     public function MajUtilisateur($idUtilisateur)
     {
         try {
-            $req = "UPDATE Utilisateur SET mdp = :mdp, est_valide = :est_valide, token = :token, token_expire = :token_expire, date_creation = :date_creation, role = :role
+            $req = "UPDATE Utilisateur SET mdp = :mdp, statut = :statut, token = :token, token_expire = :token_expire, date_creation = :date_creation, role = :role
                 WHERE id_utilisateur = :id_utilisateur";
 
             $stmt = $this->pdo->prepare($req);
             $stmt->bindValue(':id_utilisateur', $idUtilisateur);
             $stmt->bindParam(':mdp', $this->mdp);
-            $stmt->bindParam(':est_valide', $this->estValide);
+            $stmt->bindParam(':statut', $this->statut);
             $stmt->bindParam(':token', $this->token);
             $stmt->bindParam(':token_expire', $this->tokenExpire);
             $stmt->bindParam(':date_creation', $this->dateCreation);

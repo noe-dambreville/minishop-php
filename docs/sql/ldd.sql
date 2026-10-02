@@ -3,8 +3,8 @@
 CREATE TABLE Utilisateur(
    id_utilisateur VARCHAR(16),
    mdp VARCHAR(255),
-   est_valide TINYINT(1),
-   token VARCHAR(64),
+   statut ENUM('nonValide','valide','suspendu','ban') NOT NULL DEFAULT 'nonValide'
+   token VARCHAR(255),
    token_expire DATETIME,
    date_creation DATETIME,
    role ENUM('client','admin') NOT NULL DEFAULT 'client'
@@ -64,6 +64,17 @@ CREATE TABLE Panier(
    PRIMARY KEY(id_panier),
    UNIQUE(id_utilisateur),
    FOREIGN KEY(id_utilisateur) REFERENCES Client(id_utilisateur)
+);
+
+CREATE TABLE Pin(
+   id_pin VARCHAR(16),
+   code_pin VARCHAR(255),
+   date_expire DATETIME,
+   tentatives TINYINT(1) NOT NULL DEFAULT 0,
+   id_utilisateur VARCHAR(16) NOT NULL,
+   PRIMARY KEY(id_pin),
+   UNIQUE(id_utilisateur),
+   FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );
 
 CREATE TABLE Contenir(
