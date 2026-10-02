@@ -6,9 +6,9 @@ class Administrateur extends Utilisateur
     private $identifiant;
     private $niveauAcces;
 
-    function __construct(PDO $pdo, $identifiant = null, $niveauAcces = null, $idUtilisateur = null, $mdp = null, $estValide = null, $token = null, $tokenExpire = null, $dateCreation = null)
+    function __construct(PDO $pdo, $identifiant = null, $niveauAcces = null, $idUtilisateur = null, $mdp = null, $statut = null, $token = null, $tokenExpire = null, $dateCreation = null)
     {
-        parent::__construct($pdo, $idUtilisateur, $mdp, $estValide, $token, $tokenExpire, $dateCreation, 'admin');
+        parent::__construct($pdo, $idUtilisateur, $mdp, $statut, $token, $tokenExpire, $dateCreation, 'admin');
         $this->identifiant = $identifiant;
         $this->niveauAcces = $niveauAcces;
     }
